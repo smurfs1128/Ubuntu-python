@@ -2,14 +2,9 @@
 
 # Python:   3.5.1
 # Platform: Windows
-# Author:   Heyn (heyunhuan@gmail.com)
-# Program:  China Merchants Bank.
-# History:  2016/11/10 V1.0.0[Heyn]
-#           2017/10/10 V1.0.1[Heyn] Add itchat
-
-# (1) Limit all lines to a maximum of 79 characters
-# (2) Private attrs use [__private_attrs]
-# (3) [PyLint Message: See web: http://pylint-messages.wikidot.com/]
+# Author:   Zll
+# Program:  TFS-blog by class study
+# History:  2016/10/25 V1.0.0
 
 
 import re
