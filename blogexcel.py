@@ -1,6 +1,10 @@
-#!/usr/bin/env python
+## !/usr/bin/python
 
-# Copyright (C) 2005 Kiseliov Roman
+# Python:   3.5.1
+# Platform: Windows
+# Author:   Zll
+# Program:  TFS-blog excel setting
+# History:  2017/10/25 V1.0.0
 
 from xlwt import *
 
