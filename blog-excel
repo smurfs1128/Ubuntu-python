@@ -1,0 +1,145 @@
+# !/usr/bin/python
+#-*-coding:utf8-*-
+# Python:   3.5.2
+# Platform: Windows
+# Author:   ZLL
+# Program:  Import bloglist to Excel.
+# History:  2016/10/26 V1.0.0[Zll]
+# Readme:   需要安装requests模块  pip install requests
+#           需要安装xlwt模块     pip install xlwt
+#           使用方法举例：查询9月份的文章请输入：python blog-excel.py 201709
+
+
+import re
+import sys
+import requests
+
+from xlwt import *
+
+class BlogInfo:
+    """TFS  i-soft  Test Department Blog."""
+
+    def __init__(self,userid,inputdate):
+        super(BlogInfo, self).__init__()
+        self.userid = userid
+        self.inputdate = inputdate
+        self.html = self.title = self.blogtype = self.original = self.author = self.releasedate = []
+     
+    def loadurl(self):
+        """Loading"""
+        url = 'http://tfs.i-soft.com.cn/blog'
+        try:
+            payload = {'author':self.userid,'m':self.inputdate}
+            self.html = requests.get(url,params=payload).text
+        except BaseException:
+            return False
+        return True
+                 
+    def info(self):
+        """blog info"""
+        if self.loadurl() is False:
+            return ''
+        self.title =[a.replace('&#8211;','-') for a in re.findall(r'"bookmark">(.*)</a></h2>',self.html)]   #title是list
+        self.blogtype = re.findall(r'"category">(.+?)</a>',self.html)    #blogtype是list，too
+        self.releasedate = re.findall(r'"entry-date">(.+?)</span>',self.html) #release也是list
+        self.author = re.findall(r'发布的文章">(.*)</a></span>',self.html)
+        for index in range(len(self.title)):
+            if '转载' in self.title[index] :
+                self.original.append('转载')
+            else:
+                self.original.append('原创')
+        return self.title,self.blogtype,self.original,self.author,self.releasedate
+
+def setting_format(height,bold,horz):
+    """ Set Fontformat. """
+    #定义了第一行合并单元格的字体
+    fnt = Font()
+    fnt.name = 'Times New Roman'
+    fnt.height=height
+    fnt.bold = bold
+
+    #定义了字体的外边界的边框
+    borders = Borders()
+    borders.left = 1
+    borders.right = 1
+    borders.top = 0
+    borders.bottom = 1
+
+    #设置字体居中
+    al = Alignment()
+    al.horz = horz
+    al.vert = Alignment.VERT_CENTER
+
+    #第一行合并单元格字体的所有格式，包括字体大小、边框、居中
+    style = XFStyle()
+    style.font = fnt
+    style.borders = borders
+    style.alignment = al
+    return style
+
+def settingexcel(ws0,inputdate):    
+    """ Set ExcelContent. """
+    #定义了每列的列宽
+    ws0.col(0).width = 0xBFF
+    ws0.col(1).width = 0x3FFF
+    ws0.col(2).width = 0xCFF
+    ws0.col(3).width = 0xCFF
+    ws0.col(4).width = 0xCFF
+    ws0.col(5).width = 0x17FF
+
+    #首行合并单元格的操作，并输入具体内容
+    ws0.write_merge(0, 0, 0, 5, '%s月份文章列表'%inputdate, setting_format(400,True,Alignment.HORZ_CENTER))
+
+    #标题栏的操作
+    ws0.write(1,0,'序号',setting_format(220,True,Alignment.HORZ_CENTER))
+    ws0.write(1,1,'文章title',setting_format(220,True,Alignment.HORZ_CENTER))
+    ws0.write(1,2,'文章类型',setting_format(220,True,Alignment.HORZ_CENTER))
+    ws0.write(1,3,'文章归档',setting_format(220,True,Alignment.HORZ_CENTER))
+    ws0.write(1,4,'作者',setting_format(220,True,Alignment.HORZ_CENTER))
+    ws0.write(1,5,'发布日期',setting_format(220,True,Alignment.HORZ_CENTER))
+    
+           
+def main():
+    #运行脚本时传递的参数
+    try:
+        inputdate = sys.argv[1]      
+    except Exception as e:
+        print ('请输入参数，例如：')
+        print ('查询9月份的文章请输入：python blog-excel.py 201709')
+        exit() 
+    
+    #创建文档
+    wb = Workbook()
+    ws0 = wb.add_sheet('%s月份文章'%inputdate)
+    settingexcel(ws0,inputdate) 
+
+    '''存储脚本操作
+              5对应黄俊7李小双8赵盼盼10刘珂11刘辉12刘春媛13路斐
+              14梁凯15李兴峰16刘璐17姚翔川18刘畅19刘杨20赵丽丽21迟建平
+       i的作用：计算出本月所有文章的总数
+       j的作用：取userPaper.info函数返回list中的每个字符串
+    '''
+    i = 0
+    userlist = [5,7,8,10,11,12,13,14,15,16,17,18,19,20,21]
+    for user in userlist:
+        userPaper =BlogInfo(user,inputdate)
+        userPaper.info()
+        for j in range(len(userPaper.title)):
+            title = userPaper.title[j]
+            blogtype = userPaper.blogtype[j]
+            original = userPaper.original[j]
+            author = userPaper.author[j]
+            releasedate = userPaper.releasedate[j]
+            ws0.write(i+j+2,1,title,setting_format(220,False,Alignment.HORZ_LEFT))
+            ws0.write(i+j+2,2,blogtype,setting_format(220,False,Alignment.HORZ_LEFT))
+            ws0.write(i+j+2,3,original,setting_format(220,False,Alignment.HORZ_CENTER))
+            ws0.write(i+j+2,4,author,setting_format(220,False,Alignment.HORZ_LEFT))
+            ws0.write(i+j+2,5,releasedate,setting_format(220,False,Alignment.HORZ_CENTER))
+        i += len(userPaper.title)
+    for num in range(i):
+        ws0.write(num+2,0,num+1,setting_format(220,False,Alignment.HORZ_CENTER))
+        
+    wb.save('普华测试技术分享平台%s月份文章列表统计.xls'%inputdate)   
+            
+if __name__ == '__main__':
+    main()
