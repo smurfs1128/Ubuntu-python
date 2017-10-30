@@ -1,0 +1,42 @@
+# !/usr/bin/python
+#-*-coding:utf8-*-
+# Python:   3.5.2
+# Platform: Windows
+# Author:   ZLL
+# Program:  通过163邮箱发送邮件给qq邮箱
+# History:  2016/09/18 V1.0.0   只是简单发送
+# Readme:   
+#          
+#           
+
+
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+ 
+#发送邮箱服务器
+smtpserver = 'smtp.163.com'
+#发送邮箱用户/密码
+user = '****@163.com'
+password = '****'
+#发送邮箱
+sender = '****@163.com'
+#接收邮箱
+receiver ='****@qq.com'
+#发送邮件主题
+subject = 'Python email test'
+#编写HTML类型的邮件正文
+ 
+msg = MIMEText('just so so ','plain','utf-8')
+msg['Subject'] = Header(subject,'utf-8')
+msg['From'] = '****@163.com'
+msg['To'] = '****@qq.com'
+ 
+#连接发送邮件
+ 
+smtp = smtplib.SMTP()
+smtp.connect(smtpserver)
+smtp.login(user, password)
+smtp.sendmail(sender,receiver,msg.as_string())
+smtp.quit()
+print('邮件发送成功email has send out !')
