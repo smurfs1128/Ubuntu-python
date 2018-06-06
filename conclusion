@@ -1,5 +1,5 @@
 #函数式编程
-#过滤器的使用
+#1.过滤器的使用
 class Person(object):
     def __init__(self, name, gender, **kw):
         self.name = name
@@ -18,3 +18,26 @@ def CheckString(x):
         return True
 
 print(list(filter(CheckString,dir(s))))
+
+
+
+#2.斐波那契数列用类的方式来写
+
+class Fib:
+
+    def __init__(self,num):
+        a,b,L = 0,1,[]
+        for n in range(num):
+            L.append(a)
+            a,b = b,a+b
+        self.numbers = L
+
+    def __str__(self):
+        return str(self.numbers)
+
+    def __len__(self):
+        return len(self.numbers)
+
+f = Fib(10)
+print (f)
+print (len(f))
