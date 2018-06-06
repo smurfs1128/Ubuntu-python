@@ -1,0 +1,20 @@
+#函数式编程
+#过滤器的使用
+class Person(object):
+    def __init__(self, name, gender, **kw):
+        self.name = name
+        self.gender = gender
+        
+class Student(Person):
+    def __init__(self,name,gender,score):
+        super(Student,self).__init__(name,gender)
+        self.score = score
+    def whoAmI(self):
+        return 'I am a Student,my name is %s'%self.name
+s = Student('Bob','Male',88)
+#输出s所有的属性，输出自定义的属性，过滤掉有特殊意义的属性
+def CheckString(x):
+    if '__' not in x:
+        return True
+
+print(list(filter(CheckString,dir(s))))
