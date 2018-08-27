@@ -1,0 +1,10 @@
+from bs4 import BeautifulSoup
+import requests
+
+req = requests.get("http://english.cmbchina.com/Rate/ForexRates.aspx")
+html = req.text
+soup = BeautifulSoup(html,'lxml')
+td = soup.find_all('td')
+Austra_rate = [td[27].string.strip(),td[28].string.strip()]
+US_rate = [td[35].string.strip(),td[36].string.strip()]
+print(Austra_rate,US_rate)
